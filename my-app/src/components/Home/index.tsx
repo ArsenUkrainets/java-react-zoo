@@ -1,109 +1,47 @@
-import "cropperjs/dist/cropper.min.css";
-import * as React from "react";
-import { Modal, Button, Row, Col } from "antd";
-import Cropper from "cropperjs";
+import * as React from 'react';
+import CropperModal from '../common/CropperModal';
+import { Col, Row } from "antd";
+import http, {urlBackend} from '../../http_common';
 
-const HomePage: React.FC = () => {
-  const imgRef = React.useRef<HTMLImageElement>(null);
-  const prevRef = React.useRef<HTMLImageElement>(null);
-  const [cropperObj, setCropperObj] = React.useState<Cropper>();
+const HomePage : React.FC = () => {
 
-  const [visible, setVisible] = React.useState(false);
-  const [imageView, setImageView] = React.useState<string>(
-    "https://www.securityindustry.org/wp-content/uploads/sites/3/2018/05/noimage.png"
-  );
+  const [images, setImages] = React.useState<Array<string>>([]);
 
-  const handleShow = async () => {
-    await setVisible(true);
-    let cropper = cropperObj;
-    if (!cropperObj) {
-      cropper = new Cropper(imgRef.current as HTMLImageElement, {
-        aspectRatio: 1 / 1,
-        viewMode: 1,
-        preview: prevRef.current as HTMLImageElement,
-      });
-    }
-    cropper?.replace("https://vovalohika.tk/images/1200_431btv0l.ykj.jpeg");
-    setCropperObj(cropper);
+  const handleSelected = async (base64: string) => {
+    console.log("Select "+ base64);
+    const imgName = await http.post<string>("upload", {base64: base64});
+    console.log(imgName.data);
+    
+    setImages([...images,urlBackend+"files/"+imgName.data]);
   };
 
-  const handleCropped = async () => {
-    const base64 = cropperObj?.getCroppedCanvas().toDataURL() as string;
-    console.log("base64", base64);
-    setVisible(false);
-    setImageView(base64);
-  };
+  const dataImages = images.map((item, key) => {
+    return (
+      <Col md={4} key={key}>
+        <div>
+          <img src={item} alt="images" width="100%" />
+        </div>
+      </Col>
+    );
+  });
 
-  const handleSelect = async (files: FileList | null) => {
-    if (files != null) {
-      let file = files[0];
-      const img = URL.createObjectURL(file);
-      await setImageView(URL.createObjectURL(file));
-      await setVisible(true);
-      let cropper = cropperObj;
-      if (!cropperObj) {
-        cropper = new Cropper(imgRef.current as HTMLImageElement, {
-          aspectRatio: 1/1,
-          viewMode: 1,
-          preview: prevRef.current as HTMLImageElement,
-        });
-      }
-      cropper?.replace(img);
-      setCropperObj(cropper);
-    }
-  };
 
-  return (
-    <>
-      <h1>Home page</h1>
-      {/* <Button type="primary" onClick={handleShow}>
-          Upload photo
-        </Button> */}
-      <div>
-        <label htmlFor="uploadfile">
-          <img src={imageView} alt="photo" width="250" />
-        </label>
-        <input
-          type="file"
-          id="uploadfile"
-          style={{ display: "none" }}
-          onChange={(e) => {
-            handleSelect(e.currentTarget.files);
-          }}
-        />
-      </div>
-      <Modal
-        title="Cut it"
-        centered
-        visible={visible}
-        onOk={handleCropped}
-        onCancel={() => setVisible(false)}
-        width={1000}
-        maskClosable={false}
-      >
-        <Row gutter={[8, 0]}>
-          <Col md={18} xs={24}>
-            <div>
-              <img ref={imgRef} src={imageView} width="100%" />
-            </div>
-          </Col>
-          <Col md={6} xs={24}>
-            <div
-              ref={prevRef}
-              style={{
-                height: "100px",
-                border: "1px solid silver",
-                overflow: "hidden",
-              }}
-            ></div>
-            <div>
-              <input type="text"></input>
-            </div>
-          </Col>
-        </Row>
-      </Modal>
-    </>
-  );
-};
+    return (
+      <>
+        <h1>Main page</h1>
+        
+        <Row gutter={[8, 8]}>
+        {dataImages}
+        <Col md={4}>
+          <div>
+            <CropperModal onSelected={handleSelected} />
+          </div>
+        </Col>
+      </Row>
+        
+
+      </>
+    );
+}
 
 export default HomePage;
