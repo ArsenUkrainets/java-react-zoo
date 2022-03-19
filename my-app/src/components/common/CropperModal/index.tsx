@@ -4,18 +4,18 @@ import { Modal, Col, Row } from "antd";
 import Cropper from "cropperjs";
 import { ICropperProps } from "./types";
 
-const CropperModal: React.FC<ICropperProps> = ({
+const CropperModal: React.FC<ICropperProps> = ({ //hook
   onSelected,
-  aspectRation=1/1
+  aspectRation=1/1 //parameter
 }) => {
-  const [visible, setVisible] = React.useState(false);
+  const [visible, setVisible] = React.useState(false); // new state variable 'visible' with function 'setVisible'
 
-  const imgRef = React.useRef<HTMLImageElement>(null);
-  const prevRef = React.useRef<HTMLImageElement>(null);
-  const [cropperObj, setCropperObj] = React.useState<Cropper>();
+  const imgRef = React.useRef<HTMLImageElement>(null); // useRef will return a  variable object to ref, .current property is initialized by the passed argument
+  const prevRef = React.useRef<HTMLImageElement>(null); 
+  const [cropperObj, setCropperObj] = React.useState<Cropper>(); // new state variable 'cropperObj' with function 'setCropperObj'
 
-  //вибір файла
-  const handleChangeFile = async (e: any) => {
+  //choose file
+  const handleChangeFile = async (e: any) => { //async element
     const file = (e.target.files as FileList)[0];
     if (file) {
       const url = URL.createObjectURL(file);
@@ -23,20 +23,20 @@ const CropperModal: React.FC<ICropperProps> = ({
       await setVisible(true);
       console.log("Image ref ", imgRef);
       let cropper = cropperObj;
-      if (!cropper) {
-        cropper = new Cropper(imgRef.current as HTMLImageElement, {
-          aspectRatio: aspectRation,
-          viewMode: 1,
-          preview: prevRef.current as HTMLImageElement,
+      if (!cropper) { // if cropper undefined
+        cropper = new Cropper(imgRef.current as HTMLImageElement, { //creating new cropper with using imgRef
+          aspectRatio: aspectRation, //set parameter
+          viewMode: 1, // property 'viewMode'
+          preview: prevRef.current as HTMLImageElement, // set property 'preview' : ref(null) as interface 'HTMLImageElement'
         });
       }
-      cropper.replace(url);
+      cropper.replace(url); //take new url for cropper
       e.target.value = "";
       setCropperObj(cropper);
     }
   };
-  const handleOk = async () => {
-    const base64 = cropperObj?.getCroppedCanvas().toDataURL() as string;
+  const handleOk = async () => { // use async component
+    const base64 = cropperObj?.getCroppedCanvas().toDataURL() as string; // convert cropperObj url to string to set in base64
     await setVisible(false);
     onSelected(base64);
   };

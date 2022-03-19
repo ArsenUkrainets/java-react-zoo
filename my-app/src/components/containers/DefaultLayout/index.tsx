@@ -8,7 +8,7 @@ import {
   NotificationOutlined,
 } from "@ant-design/icons";
 
-const DefaultLayout: React.FC = () => {
+const DefaultLayout: React.FC = () => { //use async component
   const { SubMenu } = Menu;
   const { Header, Content, Footer, Sider } = Layout;
 

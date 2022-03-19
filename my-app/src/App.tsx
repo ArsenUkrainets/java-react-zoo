@@ -5,12 +5,12 @@ import "./App.css";
 import HomePage from "./components/Home";
 import DefaultLayout from "./components/containers/DefaultLayout";
 
-function App() {
-  return (
+function App() { // create component App to rendering element
+  return ( 
     <>
       <Routes>
-        <Route path="/" element={<DefaultLayout />}>
-          <Route index element={<HomePage />} />
+        <Route path="/" element={<DefaultLayout />}> {/**set function with element, wich import 'DefaultLayout' to which use antd */}
+          <Route index element={<HomePage />} />  {/**set function, import 'HomePage' to set the image */}
         </Route>
       </Routes>
     </>

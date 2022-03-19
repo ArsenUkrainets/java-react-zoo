@@ -32,22 +32,22 @@ public class HomeController {
         this.storageService=storageService;
     }
 
-    @GetMapping("/")
+    @GetMapping("/") //incoming request method type. @GetMapping is used to handle GET type of request method
     public List<AnimalEntity> index() {
         return animalRepository.findAll();
     }
 
-    @PostMapping("/create")
+    @PostMapping("/create") // @PostMapping is used to handle POST type of request method // create post
     public String add(Animal animal)
     {
         AnimalEntity animalEntity =  animalMapper.AnimalToAnimalEntity(animal);
-        animalRepository.save(animalEntity);
+        animalRepository.save(animalEntity); //save new animal to Repository
         return "Додано";
     }
 
-    @PostMapping("/upload")
+    @PostMapping("/upload") // upload post
     public String upload(@RequestBody UploadImageDto dto) {
-        String image = storageService.save(dto.getBase64());
+        String image = storageService.save(dto.getBase64()); //saving image from dto.Base64
         return image;
     }
 
@@ -56,10 +56,10 @@ public class HomeController {
     public ResponseEntity<Resource> serveFile(@PathVariable String filename) throws Exception {
 
         Resource file = storageService.loadAsResource(filename);
-        String urlFileName =  URLEncoder.encode("сало.jpg", StandardCharsets.UTF_8.toString());
+        String urlFileName =  URLEncoder.encode("сало.jpg", StandardCharsets.UTF_8.toString()); // coding name by url to UTF8
         return ResponseEntity.ok()
                 //.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
-                .contentType(MediaType.IMAGE_JPEG)
+                .contentType(MediaType.IMAGE_JPEG) //type of file jpeg
                 .header(HttpHeaders.CONTENT_DISPOSITION,"filename=\""+urlFileName+"\"")
                 .body(file);
     }
